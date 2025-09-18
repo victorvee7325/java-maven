@@ -66,4 +66,3 @@ jobs:
         with:
           subject-path: |
             target/*.jar
-            target/bom.json
