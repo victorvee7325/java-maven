@@ -46,11 +46,13 @@ jobs:
       - name: Build with Maven
         run: mvn -B clean verify
 
-      - name: Generate SBOM (CycloneDX)
-        run: mvn -B org.cyclonedx:cyclonedx-maven-plugin:2.9.1:makeAggregateBom
-
       - name: Publish to Nexus
         run: mvn -B deploy
+
+      - name: Attest SBOM
+        uses: actions/attest-sbom@v1
+        with:
+          path: target/*.jar
 
       - name: Attest build provenance
         uses: actions/attest-build-provenance@v1
