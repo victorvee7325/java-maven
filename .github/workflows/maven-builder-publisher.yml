@@ -49,10 +49,17 @@ jobs:
       - name: Publish to Nexus
         run: mvn -B deploy
 
-      - name: Attest SBOM
-        uses: actions/attest-sbom@v1
+      - name: Generate SBOM
+        uses: anchore/sbom-action@v0
         with:
-          path: target/*.jar
+          format: 'spdx-json'
+          output-file: 'sbom.spdx.json'
+
+      - name: Attest
+        uses: actions/attest-sbom@v3
+        with:
+          subject-path: 'target/*.jar'
+          sbom-path: 'sbom.spdx.json'
 
       - name: Attest build provenance
         uses: actions/attest-build-provenance@v1
