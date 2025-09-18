@@ -9,7 +9,9 @@ on:
 
 permissions:
   contents: read
+  actions: read
   attestations: write
+  id-token: write
 
 jobs:
   build-and-deploy:
