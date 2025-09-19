@@ -68,7 +68,7 @@ jobs:
         run: |
           curl -u "$NEXUS_USERNAME:$NEXUS_PASSWORD" \
             --upload-file sbom.spdx.json \
-            "http://localhost:8081/repository/maven-releases/org/sonatype/nexus/examples/java-maven/1.0.13/java-maven-1.0.13.spdx.json"
+            "http://localhost:8081/repository/maven-releases/org/sonatype/nexus/examples/java-maven/1.0.14/java-maven-1.0.14.spdx.json"
 
       - name: Attest build provenance
         id: attest_build_provenance
@@ -96,5 +96,5 @@ jobs:
         run: |
           curl -u "$NEXUS_USERNAME:$NEXUS_PASSWORD" \
             --upload-file "${{ steps.attest_build_provenance.outputs.bundle-path }}" \
-            "http://localhost:8081/repository/maven-releases/org/sonatype/nexus/examples/java-maven/1.0.13/${{ steps.download_provenance.outputs.provenance_file_name }}"
+            "http://localhost:8081/repository/maven-releases/org/sonatype/nexus/examples/java-maven/1.0.14/java-maven-1.0.14.jsonl"
 
