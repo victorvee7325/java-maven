@@ -68,7 +68,7 @@ jobs:
         run: |
           curl -u "$NEXUS_USERNAME:$NEXUS_PASSWORD" \
             --upload-file sbom.spdx.json \
-            "http://localhost:8081/repository/maven-releases/org/sonatype/nexus/examples/java-maven/1.0.8/java-maven-1.0.8.spdx.json"
+            "http://localhost:8081/repository/maven-releases/org/sonatype/nexus/examples/java-maven/1.0.9/java-maven-1.0.9.spdx.json"
 
       - name: Attest build provenance
         uses: actions/attest-build-provenance@v1
@@ -76,14 +76,21 @@ jobs:
           subject-path: |
             target/*.jar
 
+      - name: Download provenance attestation using gh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh attestation download \
+            --artifact target/*.jar \
+            --type provenance \
+            --output provenance.intoto.jsonl
+
       - name: Upload provenance attestation to Nexus
         env:
           NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
           NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
         run: |
-          PROVENANCE_FILE=$(ls *.intoto.jsonl | head -n 1)
           curl -u "$NEXUS_USERNAME:$NEXUS_PASSWORD" \
-            --upload-file "$PROVENANCE_FILE" \
-            "http://localhost:8081/repository/maven-releases/org/sonatype/nexus/examples/java-maven/1.0.8/java-maven-1.0.8.intoto.jsonl"
+            --upload-file provenance.intoto.jsonl \
+            "http://localhost:8081/repository/maven-releases/org/sonatype/nexus/examples/java-maven/1.0.9/java-maven-1.0.9.intoto.jsonl"
 
-      
