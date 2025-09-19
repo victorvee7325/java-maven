@@ -61,6 +61,15 @@ jobs:
           subject-path: 'target/*.jar'
           sbom-path: 'sbom.spdx.json'
 
+      - name: Upload SBOM attestation to Nexus
+        env:
+          NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
+          NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
+        run: |
+          curl -u "$NEXUS_USERNAME:$NEXUS_PASSWORD" \
+            --upload-file sbom.spdx.json \
+            "http://localhost:8081/repository/maven-releases/org/sonatype/nexus/examples/java-maven/1.0.8/java-maven-1.0.8.spdx.json"
+
       - name: Attest build provenance
         uses: actions/attest-build-provenance@v1
         with:
@@ -72,6 +81,9 @@ jobs:
           NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
           NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
         run: |
+          PROVENANCE_FILE=$(ls *.intoto.jsonl | head -n 1)
           curl -u "$NEXUS_USERNAME:$NEXUS_PASSWORD" \
-            --upload-file sbom.spdx.json \
-            "http://localhost:8081/repository/maven-releases/org/sonatype/nexus/examples/java-maven/1.0.7/java-maven-1.0.7.spdx.json"
+            --upload-file "$PROVENANCE_FILE" \
+            "http://localhost:8081/repository/maven-releases/org/sonatype/nexus/examples/java-maven/1.0.8/java-maven-1.0.8.intoto.jsonl"
+
+      
