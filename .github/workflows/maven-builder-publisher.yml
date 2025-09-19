@@ -68,9 +68,10 @@ jobs:
         run: |
           curl -u "$NEXUS_USERNAME:$NEXUS_PASSWORD" \
             --upload-file sbom.spdx.json \
-            "http://localhost:8081/repository/maven-releases/org/sonatype/nexus/examples/java-maven/1.0.10/java-maven-1.0.10.spdx.json"
+            "http://localhost:8081/repository/maven-releases/org/sonatype/nexus/examples/java-maven/1.0.11/java-maven-1.0.11.spdx.json"
 
       - name: Attest build provenance
+        id: attest_build_provenance
         uses: actions/attest-build-provenance@v1
         with:
           subject-path: |
@@ -81,6 +82,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          echo "Attestation bundle is located at: ${{ steps.attest_build_provenance.outputs.bundle-path }}"
           gh attestation download target/*.jar -R victorvee7325/java-maven | tee gh-attestation.log
           PROV_FILE=$(grep -oE 'Wrote attestations to file [^ ]+' gh-attestation.log | awk '{print $5}')
           echo "provenance_file=$PROV_FILE" >> $GITHUB_OUTPUT
@@ -92,5 +94,5 @@ jobs:
         run: |
           curl -u "$NEXUS_USERNAME:$NEXUS_PASSWORD" \
             --upload-file "${{ steps.download_provenance.outputs.provenance_file }}" \
-            "http://localhost:8081/repository/maven-releases/org/sonatype/nexus/examples/java-maven/1.0.10/${{ steps.download_provenance.outputs.provenance_file }}"
+            "http://localhost:8081/repository/maven-releases/org/sonatype/nexus/examples/java-maven/1.0.11/${{ steps.download_provenance.outputs.provenance_file }}"
 
