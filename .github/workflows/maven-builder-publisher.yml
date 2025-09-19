@@ -66,3 +66,12 @@ jobs:
         with:
           subject-path: |
             target/*.jar
+
+      - name: Upload provenance attestation to Nexus
+        env:
+          NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
+          NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
+        run: |
+          curl -u "$NEXUS_USERNAME:$NEXUS_PASSWORD" \
+            --upload-file sbom.spdx.json \
+            "http://localhost:8081/repository/maven-snapshots/org/sonatype/nexus/examples/java-maven/1.0.5-SNAPSHOT/java-maven-1.0.5-SNAPSHOT.spdx.json"
