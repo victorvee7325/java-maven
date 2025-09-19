@@ -68,7 +68,7 @@ jobs:
         run: |
           curl -u "$NEXUS_USERNAME:$NEXUS_PASSWORD" \
             --upload-file sbom.spdx.json \
-            "http://localhost:8081/repository/maven-releases/org/sonatype/nexus/examples/java-maven/1.0.12/java-maven-1.0.12.spdx.json"
+            "http://localhost:8081/repository/maven-releases/org/sonatype/nexus/examples/java-maven/1.0.13/java-maven-1.0.13.spdx.json"
 
       - name: Attest build provenance
         id: attest_build_provenance
@@ -86,6 +86,8 @@ jobs:
           gh attestation download target/*.jar -R victorvee7325/java-maven | tee gh-attestation.log
           PROV_FILE=$(grep -oE 'Wrote attestations to file [^ ]+' gh-attestation.log | awk '{print $5}')
           echo "provenance_file=$PROV_FILE" >> $GITHUB_OUTPUT
+          FILENAME=$(basename "${{ steps.attest_build_provenance.outputs.bundle-path }}")
+          echo "provenance_file_name=$FILENAME" >> $GITHUB_OUTPUT
 
       - name: Upload provenance attestation to Nexus
         env:
@@ -94,5 +96,5 @@ jobs:
         run: |
           curl -u "$NEXUS_USERNAME:$NEXUS_PASSWORD" \
             --upload-file "${{ steps.attest_build_provenance.outputs.bundle-path }}" \
-            "http://localhost:8081/repository/maven-releases/org/sonatype/nexus/examples/java-maven/1.0.12/${{ steps.attest_build_provenance.outputs.bundle-path }}"
+            "http://localhost:8081/repository/maven-releases/org/sonatype/nexus/examples/java-maven/1.0.13/${{ steps.download_provenance.outputs.provenance_file_name }}"
 
