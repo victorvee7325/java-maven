@@ -28,11 +28,8 @@ jobs:
           distribution: 'temurin'
           java-version: '11'
 
-      - name: Build with Maven
-        run: mvn -B clean verify
-
-      - name: Publish to Nexus
-        run: mvn -B deploy
+      - name: Build with Maven and Publish to Nexus
+        run: mvn -B clean package -DaltDeploymentRepository=nexus::default::http://${{ secrets.NEXUS_USERNAME }}:${{ secrets.NEXUS_PASSWORD }}@localhost:8081/repository/maven-snapshots/
 
       - name: Generate SBOM
         uses: anchore/sbom-action@v0
@@ -53,7 +50,7 @@ jobs:
         run: |
           curl -u "$NEXUS_USERNAME:$NEXUS_PASSWORD" \
             --upload-file sbom.spdx.json \
-            "http://localhost:8081/repository/maven-releases/org/sonatype/nexus/examples/java-maven/1.0.14/java-maven-1.0.14.spdx.json"
+            "http://localhost:8081/repository/maven-releases/org/sonatype/nexus/examples/java-maven/1.0.16/java-maven-1.0.16.spdx.json"
 
       - name: Attest build provenance
         id: attest_build_provenance
